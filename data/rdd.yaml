@@ -1,0 +1,9 @@
+train: /content/drive/MyDrive/RDD_SPLIT/train/images
+val: /content/drive/MyDrive/RDD_SPLIT/val/images
+test: /content/drive/MyDrive/RDD_SPLIT/test/images
+
+nc: 3
+names:
+  0: Minor
+  1: Moderate
+  2: Severe

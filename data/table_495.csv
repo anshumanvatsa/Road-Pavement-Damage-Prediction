@@ -1,0 +1,11 @@
+C.    ROAD SURFACE,Unnamed: 0,Unnamed: 1
+1.0,"Bitumen or TarMacadam","A type of construction in which the fragments of coarse aggregate are boundtogether by bitumen applied either premix or grouting method."
+2.0,"BitumenConcreteSurfacing","A type of construction in which coarse and fine mineral aggregates are mixedwith bitumen and laid not to the desired thickness."
+3.0,"BlackTopSurface",The surface of roads made with bitumen as a binder.
+4.0,Brick Paving,A paving composed of bricks laid in regular courses.
+5.0,"Cement BoundMacadam","A surface in which a matrix of a cement sand mixture is interposed betweentwo layers of road metal spread on the road and the whole mass watered andconsolidated so that the matter works into the interstices of the road metal toproduce a compact mass."
+6.0,"CementConcrete","A surface obtained by placing and consolidating cement concrete to requiredthickness."
+7.0,Earth Road,A road with the carriageway composed of natural soil.
+8.0,Gravel Road,A road with the carriageway composed of a consolidated layer of gravel.
+9.0,"WaterBoundMacadam","A type of surfacing in which stone fragments are first inter locked by rollingandthenboundwithsmallerstonegraveletc.whichenforcedintotheintersection by brimming, watering and rolling."
+10.0,Motorable,"i)ForPlainAreas:Surfacedorunsurfacedroadofminimum3.0MCarriageway width is motorable.ii) ForHillyAreas:Surfacedorunsurfacedroadofminimum3.0MCarriageway width having no horizontal curve of radii less than 14 M andgrade not steeper than 7% is motorable. A bridle path is non motorable."

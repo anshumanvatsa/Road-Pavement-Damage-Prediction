@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 25% 7%;
+    --foreground: 210 20% 92%;
+
+    --card: 220 22% 10%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 220 22% 10%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 185 65% 48%;
+    --primary-foreground: 220 25% 7%;
+
+    --secondary: 220 20% 16%;
+    --secondary-foreground: 210 20% 85%;
+
+    --muted: 220 18% 14%;
+    --muted-foreground: 215 15% 55%;
+
+    --accent: 185 50% 22%;
+    --accent-foreground: 185 65% 70%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 18% 18%;
+    --input: 220 18% 18%;
+    --ring: 185 65% 48%;
+
+    --radius: 0.5rem;
+
+    --risk-low: 145 65% 42%;
+    --risk-low-foreground: 145 30% 95%;
+    --risk-medium: 38 92% 55%;
+    --risk-medium-foreground: 38 30% 10%;
+    --risk-high: 0 72% 55%;
+    --risk-high-foreground: 0 0% 100%;
+
+    --chart-1: 185 65% 48%;
+    --chart-2: 145 65% 42%;
+    --chart-3: 38 92% 55%;
+    --chart-4: 0 72% 55%;
+    --chart-5: 260 50% 55%;
+
+    --sidebar-background: 220 25% 5%;
+    --sidebar-foreground: 210 15% 70%;
+    --sidebar-primary: 185 65% 48%;
+    --sidebar-primary-foreground: 220 25% 7%;
+    --sidebar-accent: 220 20% 12%;
+    --sidebar-accent-foreground: 185 65% 70%;
+    --sidebar-border: 220 18% 14%;
+    --sidebar-ring: 185 65% 48%;
+
+    --font-display: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-display);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tight;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+@layer utilities {
+  .glow-primary {
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+  }
+
+  .glow-risk-high {
+    box-shadow: 0 0 15px -5px hsl(var(--risk-high) / 0.4);
+  }
+
+  .glow-risk-medium {
+    box-shadow: 0 0 15px -5px hsl(var(--risk-medium) / 0.4);
+  }
+
+  .glow-risk-low {
+    box-shadow: 0 0 15px -5px hsl(var(--risk-low) / 0.4);
+  }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}

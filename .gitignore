@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+.env
+.env.example
+
+# Models and large data files
+*.zip
+*.grib
+*.pdf
+*.pth
+*.pt
+*.pkl
+*.nc
+*.db
+
+# Large dataset directories
+data/rdd_train_cnn/
+data/rdd_val_cnn/
+data/runs/
+data/archive*/
+data/6551*/
+data/b1ffe*/
+data/c8c14*/
+
+# Node
+node_modules/
+dist/
+bun.lockb
+package-lock.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Misc
+npx

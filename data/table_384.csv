@@ -1,0 +1,40 @@
+Sl.No.,Name of State/UT,"TotalLength(6+7)",Surfaced,Un-surfaced,Unnamed: 0,Unnamed: 1
+,,,WBM/WMM,BT/CC,"Total(4+5)",
+1,2,3.0,4,5,6,7.0
+1,Andhra Pradesh,,,,,
+2,Arunachal Pradesh,2783.0,317,82,399,2383.0
+3,Assam,36544.0,0,18990,18990,17554.0
+4,Bihar      $,,,,,
+5,Chhattisgarh   $,,,,,
+6,Goa,3328.0,34,2625,2659,669.0
+7,Gujarat,23114.0,499,21622,22121,993.0
+8,Haryana     $,,,,,
+9,Himachal Pradesh,28203.0,5002,17162,22164,6039.0
+10,Jammu & Kashmir,9571.0,3836,4660,8496,1075.0
+11,Jharkhand,14926.0,0,14926,14926,0.0
+12,Karnataka    $,,,,,
+13,Kerala     $,,,,,
+14,Madhya Pradesh,26482.0,4980,18762,23742,2740.0
+15,Maharashtra,146136.0,47151,53830,100981,45154.0
+16,Manipur     $,,,,,
+17,Meghalaya,2112.0,70,1073,1142,969.0
+18,Mizoram,635.0,0,144,144,491.0
+19,Nagaland,3538.0,431,0,431,3107.0
+20,Odisha    $,,,,,
+21,Punjab    $,,,,,
+22,Rajasthan,63099.0,300,60282,60582,2517.0
+23,Sikkim,,,,,
+24,Tamil Nadu     $,,,,,
+25,Telangana     $,,,,,
+26,Tripura,6037.0,847,4659,5506,531.0
+27,Uttarakhand,15652.0,602,9031,9632,6020.0
+28,Uttar Pradesh,163116.0,0,163035,163035,81.0
+29,West Bengal,1468.0,0,1426,1426,42.0
+30,"Andaman & NicobarIsland",437.0,10,427,437,0.0
+31,Chandigarh   $,,,,,
+32,Dadra & Nagar Haveli,620.0,3,617,620,0.0
+33,Daman & Diu,126.0,0,126,126,0.0
+34,Delhi     $,,,,,
+35,Lakshadweep,207.0,0,207,207,0.0
+36,Puducherry,254.0,0,254,254,0.0
+Total,548387,64082.0,393939,458021,90366,
