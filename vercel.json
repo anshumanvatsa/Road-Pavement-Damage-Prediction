@@ -33,6 +33,7 @@
   ],
   "env": {
     "VITE_API_URL": "/api",
-    "USE_SQLITE": "1"
+    "USE_SQLITE": "1",
+    "VERCEL": "1"
   }
 }

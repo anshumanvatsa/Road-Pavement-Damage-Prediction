@@ -1,4 +1,4 @@
-"""Application configuration."""
+"""Application configuration - Vercel-compatible, zero pydantic-settings dependency."""
 import os
 from functools import lru_cache
 
@@ -6,36 +6,37 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Detect serverless / Vercel environment
+_IS_VERCEL = os.getenv("VERCEL") == "1" or os.getenv("USE_SQLITE") == "1"
 
-import shutil
+# On Vercel the only writable directory is /tmp.
+# We copy the bundled DB there once so migrations can run.
+if _IS_VERCEL:
+    import shutil
+    _src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "predictive.db")
+    _dst = "/tmp/predictive.db"
+    if not os.path.exists(_dst) and os.path.exists(_src):
+        try:
+            shutil.copy2(_src, _dst)
+        except Exception:
+            pass  # will create fresh DB below
+    _db_file = _dst
+else:
+    _db_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "predictive.db")
+
+# Always use forward slashes for SQLite URL (Windows compat)
+_db_url_async = f"sqlite+aiosqlite:///{_db_file.replace(os.sep, '/')}"
+_db_url_sync  = f"sqlite:///{_db_file.replace(os.sep, '/')}"
+
 
 class Settings:
-    """Application settings loaded from environment."""
+    """Application settings."""
 
-    _base_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "predictive.db")
-    _db_path = _base_db_path
-    
-    # In Vercel serverless, the filesystem is read-only except for /tmp.
-    if os.getenv("VERCEL") == "1":
-        _db_path = "/tmp/predictive.db"
-        if not os.path.exists(_db_path) and os.path.exists(_base_db_path):
-            shutil.copy2(_base_db_path, _db_path)
+    database_url: str = os.getenv("DATABASE_URL", _db_url_async)
+    database_url_sync: str = os.getenv("DATABASE_URL_SYNC", _db_url_sync)
 
-    database_url: str = os.getenv(
-        "DATABASE_URL",
-        f"sqlite+aiosqlite:///{_db_path.replace(os.sep, '/')}" if os.getenv("USE_SQLITE", "0") == "1" else "postgresql+asyncpg://postgres:postgres@localhost:5432/predictive_db",
-    )
-    database_url_sync: str = os.getenv(
-        "DATABASE_URL_SYNC",
-        f"sqlite:///{_db_path.replace(os.sep, '/')}" if os.getenv("USE_SQLITE", "0") == "1" else "postgresql://postgres:postgres@localhost:5432/predictive_db",
-    )
-
-    # CORS
-    cors_origins: list[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:8080",
-    ]
+    # CORS – allow everything; tighten after demo
+    cors_origins: list = ["*"]
 
     # ML
     ml_model_path: str = os.getenv("ML_MODEL_PATH", "ml/model.pkl")

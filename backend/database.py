@@ -8,19 +8,18 @@ from config import get_settings
 
 settings = get_settings()
 
-# SQLite does not support pool_size or max_overflow with NullPool
-engine_kwargs = {
+# SQLite (aiosqlite / NullPool) does NOT support pool_size or max_overflow.
+_is_sqlite = settings.database_url.startswith("sqlite")
+
+engine_kwargs: dict = {
     "echo": False,
-    "pool_pre_ping": True,
 }
-if not settings.database_url.startswith("sqlite"):
+if not _is_sqlite:
+    engine_kwargs["pool_pre_ping"] = True
     engine_kwargs["pool_size"] = 5
     engine_kwargs["max_overflow"] = 10
 
-engine = create_async_engine(
-    settings.database_url,
-    **engine_kwargs
-)
+engine = create_async_engine(settings.database_url, **engine_kwargs)
 
 async_session_maker = async_sessionmaker(
     engine,
@@ -38,10 +37,11 @@ class Base(DeclarativeBase):
 
 _db_initialized = False
 
+
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Dependency that provides a database session.
-    Also ensures DB is initialized on first request for serverless environments
-    that skip FastAPI lifespan events.
+    Ensures DB tables exist on the very first request (Vercel serverless
+    skips FastAPI lifespan events, so we guard here).
     """
     global _db_initialized
     if not _db_initialized:
@@ -65,6 +65,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Create all database tables."""
+    """Create all database tables if they don't exist."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
