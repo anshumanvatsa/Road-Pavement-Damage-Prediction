@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { RoadSegment, Prediction, DigitalTwin } from './types';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:8000/api');
 
 export async function addRoad(road: Omit<RoadSegment, 'id' | 'last_updated'>): Promise<RoadSegment> {
   const res = await fetch(`${API_BASE}/roads`, {

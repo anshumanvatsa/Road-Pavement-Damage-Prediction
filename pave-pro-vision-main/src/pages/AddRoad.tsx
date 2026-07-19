@@ -79,7 +79,7 @@ export default function AddRoad() {
 
   const fetchLivePrediction = async (currentForm: typeof form) => {
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+      const apiBase = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:8000/api');
       const res = await fetch(`${apiBase}/predict/custom`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
