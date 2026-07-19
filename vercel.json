@@ -15,12 +15,20 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/main.py"
+      "dest": "backend/main.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "pave-pro-vision-main/assets/$1"
+    },
+    {
+      "src": "/favicon.png",
+      "dest": "pave-pro-vision-main/favicon.png"
     },
     { "handle": "filesystem" },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "pave-pro-vision-main/index.html"
     }
   ],
   "env": {
