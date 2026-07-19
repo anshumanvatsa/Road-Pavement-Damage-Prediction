@@ -10,6 +10,7 @@ import RoadDetail from "./pages/RoadDetail";
 import AddRoad from "./pages/AddRoad";
 import DigitalTwins from "./pages/DigitalTwins";
 import NotFound from "./pages/NotFound";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -20,14 +21,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AppLayout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/roads" element={<RoadList />} />
-            <Route path="/roads/:id" element={<RoadDetail />} />
-            <Route path="/add-road" element={<AddRoad />} />
-            <Route path="/digital-twins" element={<DigitalTwins />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/roads" element={<RoadList />} />
+              <Route path="/roads/:id" element={<RoadDetail />} />
+              <Route path="/add-road" element={<AddRoad />} />
+              <Route path="/digital-twins" element={<DigitalTwins />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
         </AppLayout>
       </BrowserRouter>
     </TooltipProvider>
