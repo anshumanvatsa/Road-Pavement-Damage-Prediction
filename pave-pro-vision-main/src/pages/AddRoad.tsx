@@ -110,15 +110,19 @@ export default function AddRoad() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.road_name || !form.location) {
       toast.error('Please fill in road name and location');
       return;
     }
-    const road = addRoad(form);
-    toast.success(`${road.road_name} added successfully`);
-    navigate(`/roads/${road.id}`);
+    try {
+      const road = await addRoad(form);
+      toast.success(`${road.road_name} added successfully`);
+      navigate(`/roads/${road.id}`);
+    } catch (e) {
+      toast.error('Failed to add road');
+    }
   };
 
   const fields = [

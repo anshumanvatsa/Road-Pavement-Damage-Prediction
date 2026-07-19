@@ -7,11 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+import shutil
+
 class Settings:
     """Application settings loaded from environment."""
 
-    # Database - use SQLite for dev when USE_SQLITE=1 (no PostgreSQL required)
-    _db_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "predictive.db")
+    _base_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "predictive.db")
+    _db_path = _base_db_path
+    
+    # In Vercel serverless, the filesystem is read-only except for /tmp.
+    if os.getenv("VERCEL") == "1":
+        _db_path = "/tmp/predictive.db"
+        if not os.path.exists(_db_path) and os.path.exists(_base_db_path):
+            shutil.copy2(_base_db_path, _db_path)
 
     database_url: str = os.getenv(
         "DATABASE_URL",

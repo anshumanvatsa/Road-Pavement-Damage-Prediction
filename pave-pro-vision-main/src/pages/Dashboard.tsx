@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Route, AlertTriangle, Shield, Activity, TrendingDown } from 'lucide-react';
-import { getDashboardStats, getAllRoads, getAllDigitalTwins } from '@/lib/store';
+import { useDashboardStats, useAllRoads, useAllDigitalTwins } from '@/lib/store';
 import { StatCard } from '@/components/StatCard';
 import { RiskBadge } from '@/components/RiskBadge';
 import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -15,9 +15,12 @@ const RISK_COLORS = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const stats = useMemo(() => getDashboardStats(), []);
-  const roads = useMemo(() => getAllRoads(), []);
-  const twins = useMemo(() => getAllDigitalTwins(), []);
+  const { data: stats, loading: statsLoading } = useDashboardStats();
+  const { data: roads } = useAllRoads();
+  const twins = useAllDigitalTwins();
+
+  // If loading, show simple fallback
+  if (statsLoading) return <div className="p-8">Loading dashboard...</div>;
 
   const pieData = [
     { name: 'Low', value: stats.low },

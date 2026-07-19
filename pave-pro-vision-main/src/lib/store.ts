@@ -2,88 +2,100 @@ import type { RoadSegment, Prediction, DigitalTwin } from './types';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
-/** Synchronous fetch - required to keep store API compatible with existing pages */
-function syncFetch<T>(url: string, options?: { method?: string; body?: string }): T | undefined {
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open(options?.method || 'GET', url, false);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(options?.body);
-    if (xhr.status >= 200 && xhr.status < 300) {
-      return (xhr.responseText ? JSON.parse(xhr.responseText) : null) as T;
-    }
-    if (xhr.status === 404) return undefined as T;
-  } catch {
-    // Backend unreachable - return undefined/empty
-  }
-  return undefined as T;
-}
+import { useState, useEffect } from 'react';
+import type { RoadSegment, Prediction, DigitalTwin } from './types';
 
-// --- API functions ---
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
-export function fetchRoads(): RoadSegment[] {
-  return syncFetch<RoadSegment[]>(`${API_BASE}/roads`) ?? [];
-}
-
-export function fetchRoadById(id: string): RoadSegment | undefined {
-  return syncFetch<RoadSegment | undefined>(`${API_BASE}/roads/${id}`);
-}
-
-export function fetchPrediction(id: string): Prediction {
-  const res = syncFetch<Prediction>(`${API_BASE}/predict/${id}`, {
-    method: 'POST'
-  });
-  if (!res) throw new Error('Prediction failed');
-  return res;
-}
-
-
-export function fetchDigitalTwin(id: string): DigitalTwin | undefined {
-  return syncFetch<DigitalTwin | undefined>(`${API_BASE}/digital-twin/${id}`);
-}
-
-// --- Store exports (same names, backend-powered) ---
-
-export function getAllRoads(): RoadSegment[] {
-  return fetchRoads();
-}
-
-export function getRoad(id: string): RoadSegment | undefined {
-  return fetchRoadById(id);
-}
-
-export function addRoad(road: Omit<RoadSegment, 'id' | 'last_updated'>): RoadSegment {
-  const res = syncFetch<RoadSegment>(`${API_BASE}/roads`, {
+export async function addRoad(road: Omit<RoadSegment, 'id' | 'last_updated'>): Promise<RoadSegment> {
+  const res = await fetch(`${API_BASE}/roads`, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(road),
   });
-  if (!res) throw new Error('Failed to add road');
-  return res;
+  if (!res.ok) throw new Error('Failed to add road');
+  return res.json();
 }
 
-export function getPredictions(roadId: string): Prediction[] {
-  const prediction = fetchPrediction(roadId);
-  return prediction ? [prediction] : [];
+export function useData<T>(url: string, defaultValue: T) {
+  const [data, setData] = useState<T>(defaultValue);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!url) return;
+    let mounted = true;
+    setLoading(true);
+    fetch(`${API_BASE}${url}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed fetch');
+        return res.json();
+      })
+      .then(json => {
+        if (mounted) {
+          setData(json);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => { mounted = false; };
+  }, [url]);
+
+  return { data, loading };
 }
 
-
-export function getDigitalTwinForRoad(roadId: string): DigitalTwin | undefined {
-  return fetchDigitalTwin(roadId);
+export function useAllRoads() {
+  return useData<RoadSegment[]>('/roads', []);
 }
 
-export function getAllDigitalTwins(): DigitalTwin[] {
-  const roads = fetchRoads();
-  const twins: DigitalTwin[] = [];
-  for (const road of roads) {
-    const twin = fetchDigitalTwin(road.id);
-    if (twin) twins.push(twin);
-  }
-  return twins;
-}
-
-export function getDashboardStats() {
-  const res = syncFetch<{ total: number; high: number; medium: number; low: number; avgCondition: number }>(
-    `${API_BASE}/dashboard/stats`
+export function useDashboardStats() {
+  return useData<{ total: number; high: number; medium: number; low: number; avgCondition: number }>(
+    '/dashboard/stats',
+    { total: 0, high: 0, medium: 0, low: 0, avgCondition: 0 }
   );
-  return res ?? { total: 0, high: 0, medium: 0, low: 0, avgCondition: 0 };
+}
+
+export function useRoad(id: string) {
+  return useData<RoadSegment | undefined>(id ? `/roads/${id}` : '', undefined);
+}
+
+export function usePredictions(id: string) {
+  const [data, setData] = useState<Prediction[]>([]);
+  
+  useEffect(() => {
+    if (!id) return;
+    let mounted = true;
+    fetch(`${API_BASE}/predict/${id}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(json => { if (mounted) setData([json]); })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, [id]);
+
+  return { data };
+}
+
+export function useDigitalTwin(id: string) {
+  return useData<DigitalTwin | undefined>(id ? `/digital-twin/${id}` : '', undefined);
+}
+
+export function useAllDigitalTwins() {
+  const { data: roads, loading } = useAllRoads();
+  const [twins, setTwins] = useState<DigitalTwin[]>([]);
+
+  useEffect(() => {
+    if (loading || !roads.length) return;
+    let mounted = true;
+    Promise.all(
+      roads.map(r => fetch(`${API_BASE}/digital-twin/${r.id}`).then(res => res.json()).catch(() => null))
+    ).then(results => {
+      if (mounted) {
+        setTwins(results.filter(Boolean) as DigitalTwin[]);
+      }
+    });
+    return () => { mounted = false; };
+  }, [roads, loading]);
+
+  return twins;
 }

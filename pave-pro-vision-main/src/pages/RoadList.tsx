@@ -2,20 +2,24 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
-import { getAllRoads } from '@/lib/store';
+import { useAllRoads } from '@/lib/store';
 import { createDigitalTwin } from '@/lib/digital-twin';
 import { RiskBadge } from '@/components/RiskBadge';
 import { Input } from '@/components/ui/input';
 
 export default function RoadList() {
   const navigate = useNavigate();
-  const roads = useMemo(() => getAllRoads(), []);
+  const { data: roads, loading } = useAllRoads();
+  
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
+    if (!roads) return [];
     const q = search.toLowerCase();
     return roads.filter(r => r.road_name.toLowerCase().includes(q) || r.location.toLowerCase().includes(q));
   }, [roads, search]);
+
+  if (loading) return <div className="p-8">Loading roads...</div>;
 
   return (
     <div>

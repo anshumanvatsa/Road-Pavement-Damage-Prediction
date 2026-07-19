@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Cpu, Search } from 'lucide-react';
-import { getAllRoads } from '@/lib/store';
+import { useAllRoads } from '@/lib/store';
 import { createDigitalTwin } from '@/lib/digital-twin';
 import { RiskBadge } from '@/components/RiskBadge';
 import { Input } from '@/components/ui/input';
@@ -13,11 +13,12 @@ export default function DigitalTwins() {
   const [search, setSearch] = useState('');
   const [filterRisk, setFilterRisk] = useState<RiskLevel | 'All'>('All');
 
-  const roads = useMemo(() => getAllRoads(), []);
-  const twinsData = useMemo(() =>
-    roads.map(road => ({ road, twin: createDigitalTwin(road) })),
-    [roads]
-  );
+  const { data: roads, loading } = useAllRoads();
+  
+  const twinsData = useMemo(() => {
+    if (!roads) return [];
+    return roads.map(road => ({ road, twin: createDigitalTwin(road.current_condition_index, road.traffic_volume) }));
+  }, [roads]);
 
   const filtered = useMemo(() => {
     let result = twinsData;
@@ -28,6 +29,8 @@ export default function DigitalTwins() {
     }
     return result;
   }, [twinsData, search, filterRisk]);
+
+  if (loading) return <div className="p-8">Loading digital twins...</div>;
 
   const riskFilters: (RiskLevel | 'All')[] = ['All', 'High', 'Medium', 'Low'];
 

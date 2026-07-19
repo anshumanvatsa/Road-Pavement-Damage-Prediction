@@ -1,18 +1,22 @@
-import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Thermometer, Droplets, CloudRain, Truck, Activity } from 'lucide-react';
-import { getRoad, getPredictions, getDigitalTwinForRoad } from '@/lib/store';
-import { RiskBadge } from '@/components/RiskBadge';
+import { ArrowLeft, Thermometer, Droplets, CloudRain, Truck } from 'lucide-react';
+import { useRoad, usePredictions, useDigitalTwin } from '@/lib/store';
 import { Button } from '@/components/ui/button';
+import { RiskBadge } from '@/components/RiskBadge';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function RoadDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const road = useMemo(() => getRoad(id!), [id]);
-  const predictions = useMemo(() => getPredictions(id!), [id]);
-  const twin = useMemo(() => getDigitalTwinForRoad(id!), [id]);
+
+  const { data: road, loading: roadLoading } = useRoad(id || '');
+  const { data: predictions = [] } = usePredictions(id || '');
+  const { data: twin } = useDigitalTwin(id || '');
+
+  if (roadLoading) {
+    return <div className="p-8">Loading road details...</div>;
+  }
 
   if (!road || !twin) {
     return <div className="text-center py-20 text-muted-foreground">Road not found</div>;
@@ -41,7 +45,7 @@ export default function RoadDetail() {
           <h1 className="text-2xl font-bold text-foreground">{road.road_name}</h1>
           <p className="text-sm text-muted-foreground">{road.location} · {road.latitude.toFixed(4)}, {road.longitude.toFixed(4)}</p>
         </div>
-        <RiskBadge level={twin.risk_level} className="text-sm" />
+        <RiskBadge level={twin.risk_level as any} className="text-sm" />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -91,7 +95,7 @@ export default function RoadDetail() {
               <p className="text-xs text-muted-foreground mb-1">Predicted Condition</p>
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-risk-medium transition-all" style={{ width: `${twin.predicted_state}%` }} />
+                  <div className="h-full rounded-full bg-orange-500 transition-all" style={{ width: `${twin.predicted_state}%` }} />
                 </div>
                 <span className="text-sm font-mono text-foreground w-12 text-right">{twin.predicted_state}</span>
               </div>
@@ -112,7 +116,7 @@ export default function RoadDetail() {
               <p className="text-xs text-muted-foreground mb-1">{p.prediction_date}</p>
               <p className="text-lg font-bold font-mono text-foreground">{p.predicted_condition_index}</p>
               <p className="text-xs text-muted-foreground mb-2">Degradation: {p.predicted_degradation}</p>
-              <RiskBadge level={p.risk_level} />
+              <RiskBadge level={p.risk_level as any} />
             </div>
           ))}
         </div>
