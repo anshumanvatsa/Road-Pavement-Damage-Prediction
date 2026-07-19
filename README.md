@@ -10,6 +10,9 @@
 
 ## 📖 Overview
 
+**Live Demo**: [https://predictive-project-beryl.vercel.app](https://predictive-project-beryl.vercel.app)
+**GitHub Repository**: [Road-Pavement-Damage-Prediction](https://github.com/anshumanvatsa/Road-Pavement-Damage-Prediction)
+
 **PavePro Vision** is a comprehensive, full-stack predictive maintenance platform designed to monitor, analyze, and forecast road degradation. By leveraging state-of-the-art machine learning, computer vision, and interactive digital twins, the system enables transportation agencies and civil engineers to transition from reactive repairs to proactive infrastructure management.
 
 ## 🚀 Core Features

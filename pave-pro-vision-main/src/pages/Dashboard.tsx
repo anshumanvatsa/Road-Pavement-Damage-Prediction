@@ -42,9 +42,9 @@ export default function Dashboard() {
 
   const highRiskRoads = useMemo(() =>
     twins.filter(t => t.risk_level === 'High').slice(0, 5).map(t => {
-      const road = roads.find(r => r.id === t.road_segment_id)!;
-      return { ...t, road };
-    }), [twins, roads]);
+      const road = roads.find(r => r.id === t.road_segment_id);
+      return road ? { ...t, road } : null;
+    }).filter(Boolean) as any[], [twins, roads]);
 
   return (
     <div>

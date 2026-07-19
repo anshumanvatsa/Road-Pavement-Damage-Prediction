@@ -17,7 +17,7 @@ export default function DigitalTwins() {
   
   const twinsData = useMemo(() => {
     if (!roads) return [];
-    return roads.map(road => ({ road, twin: createDigitalTwin(road.current_condition_index, road.traffic_volume) }));
+    return roads.map(road => ({ road, twin: createDigitalTwin(road) }));
   }, [roads]);
 
   const filtered = useMemo(() => {
