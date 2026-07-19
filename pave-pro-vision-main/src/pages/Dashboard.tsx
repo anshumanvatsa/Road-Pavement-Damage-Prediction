@@ -76,14 +76,18 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-sm font-mono uppercase tracking-widest text-muted-foreground mb-4">Risk Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
-                {pieData.map((entry) => (
-                  <Cell key={entry.name} fill={RISK_COLORS[entry.name as keyof typeof RISK_COLORS]} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ background: 'hsl(220, 22%, 10%)', border: '1px solid hsl(220, 18%, 18%)', borderRadius: 8, fontSize: 12 }} />
-            </PieChart>
+            {stats.total > 0 ? (
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
+                  {pieData.map((entry) => (
+                    <Cell key={entry.name} fill={RISK_COLORS[entry.name as keyof typeof RISK_COLORS]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ background: 'hsl(220, 22%, 10%)', border: '1px solid hsl(220, 18%, 18%)', borderRadius: 8, fontSize: 12 }} />
+              </PieChart>
+            ) : (
+              <div className="flex h-full items-center justify-center text-muted-foreground text-sm">No data available</div>
+            )}
           </ResponsiveContainer>
           <div className="flex justify-center gap-4 mt-2">
             {pieData.map(d => (
