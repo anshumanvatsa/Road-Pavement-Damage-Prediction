@@ -19,13 +19,10 @@ export default function Dashboard() {
   const { data: roads } = useAllRoads();
   const twins = useAllDigitalTwins();
 
-  // If loading, show simple fallback
-  if (statsLoading) return <div className="p-8">Loading dashboard...</div>;
-
   const pieData = [
-    { name: 'Low', value: stats.low },
-    { name: 'Medium', value: stats.medium },
-    { name: 'High', value: stats.high },
+    { name: 'Low', value: stats?.low },
+    { name: 'Medium', value: stats?.medium },
+    { name: 'High', value: stats?.high },
   ];
 
   const conditionDistribution = useMemo(() => {
@@ -55,6 +52,9 @@ export default function Dashboard() {
 
   const validPieData = pieData.map(d => ({ ...d, value: typeof d.value === 'number' && !isNaN(d.value) ? d.value : 0 }));
   const pieSum = validPieData.reduce((acc, curr) => acc + curr.value, 0);
+
+  // If loading, show simple fallback - MUST BE AFTER ALL HOOKS
+  if (statsLoading) return <div className="p-8">Loading dashboard...</div>;
 
   return (
     <div>
