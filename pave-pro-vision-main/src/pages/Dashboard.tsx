@@ -33,18 +33,28 @@ export default function Dashboard() {
       range: `${i * 10}-${(i + 1) * 10}`,
       count: 0,
     }));
-    roads.forEach(r => {
-      const idx = Math.min(Math.floor(r.current_condition_index / 10), 9);
-      buckets[idx].count++;
-    });
+    if (Array.isArray(roads)) {
+      roads.forEach(r => {
+        const condition = typeof r.current_condition_index === 'number' && !isNaN(r.current_condition_index) ? r.current_condition_index : 0;
+        const idx = Math.max(0, Math.min(Math.floor(condition / 10), 9));
+        if (buckets[idx]) {
+          buckets[idx].count++;
+        }
+      });
+    }
     return buckets;
   }, [roads]);
 
-  const highRiskRoads = useMemo(() =>
-    twins.filter(t => t.risk_level === 'High').slice(0, 5).map(t => {
-      const road = roads.find(r => r.id === t.road_segment_id);
+  const highRiskRoads = useMemo(() => {
+    if (!Array.isArray(twins) || !Array.isArray(roads)) return [];
+    return twins.filter(t => t?.risk_level === 'High').slice(0, 5).map(t => {
+      const road = roads.find(r => r?.id === t?.road_segment_id);
       return road ? { ...t, road } : null;
-    }).filter(Boolean) as any[], [twins, roads]);
+    }).filter(Boolean) as any[];
+  }, [twins, roads]);
+
+  const validPieData = pieData.map(d => ({ ...d, value: typeof d.value === 'number' && !isNaN(d.value) ? d.value : 0 }));
+  const pieSum = validPieData.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
     <div>
@@ -54,10 +64,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Total Roads" value={stats.total} icon={Route} variant="primary" subtitle="Monitored segments" />
-        <StatCard title="High Risk" value={stats.high} icon={AlertTriangle} variant="risk-high" subtitle="Immediate attention" />
-        <StatCard title="Medium Risk" value={stats.medium} icon={TrendingDown} variant="risk-medium" subtitle="Schedule maintenance" />
-        <StatCard title="Low Risk" value={stats.low} icon={Shield} variant="risk-low" subtitle="Normal monitoring" />
+        <StatCard title="Total Roads" value={stats?.total ?? 0} icon={Route} variant="primary" subtitle="Monitored segments" />
+        <StatCard title="High Risk" value={stats?.high ?? 0} icon={AlertTriangle} variant="risk-high" subtitle="Immediate attention" />
+        <StatCard title="Medium Risk" value={stats?.medium ?? 0} icon={TrendingDown} variant="risk-medium" subtitle="Schedule maintenance" />
+        <StatCard title="Low Risk" value={stats?.low ?? 0} icon={Shield} variant="risk-low" subtitle="Normal monitoring" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -76,10 +86,10 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-sm font-mono uppercase tracking-widest text-muted-foreground mb-4">Risk Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
-            {stats.total > 0 ? (
+            {pieSum > 0 ? (
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
-                  {pieData.map((entry) => (
+                <Pie data={validPieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
+                  {validPieData.map((entry) => (
                     <Cell key={entry.name} fill={RISK_COLORS[entry.name as keyof typeof RISK_COLORS]} />
                   ))}
                 </Pie>
@@ -90,7 +100,7 @@ export default function Dashboard() {
             )}
           </ResponsiveContainer>
           <div className="flex justify-center gap-4 mt-2">
-            {pieData.map(d => (
+            {validPieData.map(d => (
               <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ background: RISK_COLORS[d.name as keyof typeof RISK_COLORS] }} />
                 {d.name} ({d.value})
