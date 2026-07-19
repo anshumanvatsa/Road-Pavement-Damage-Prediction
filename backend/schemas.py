@@ -65,3 +65,13 @@ class DashboardStats(BaseModel):
     medium: int
     low: int
     avgCondition: float
+
+
+class CustomPredictionRequest(BaseModel):
+    """Features for custom map-click prediction."""
+    traffic_volume: float = 5000
+    heavy_vehicle_percentage: float = 15
+    rainfall: float = 100
+    temperature: float = 22
+    humidity: float = 55
+    current_condition: float = 75

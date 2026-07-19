@@ -41,11 +41,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(roads_router)
-app.include_router(predictions_router)
-app.include_router(digital_twin_router)
-app.include_router(dashboard_router)
+from fastapi import APIRouter
 
+api_router = APIRouter(prefix="/api")
+api_router.include_router(roads_router)
+api_router.include_router(predictions_router)
+api_router.include_router(digital_twin_router)
+api_router.include_router(dashboard_router)
+
+app.include_router(api_router)
 
 @app.get("/health")
 async def health():

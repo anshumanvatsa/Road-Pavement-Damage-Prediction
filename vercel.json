@@ -1,0 +1,28 @@
+{
+  "name": "predictive-project",
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "pave-pro-vision-main/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "pave-pro-vision-main/$1"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "/api"
+  }
+}

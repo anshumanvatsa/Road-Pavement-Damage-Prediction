@@ -2,6 +2,8 @@
 
 <div align="center">
   <h3>Advanced AI-Powered Road Degradation Prediction & Digital Twin Dashboard</h3>
+  <br />
+  <strong>🟢 Live Demo:</strong> <a href="https://predictive-project-beryl.vercel.app">https://predictive-project-beryl.vercel.app</a>
 </div>
 
 ---

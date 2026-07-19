@@ -4,12 +4,43 @@ from sqlalchemy import delete, select
 
 from database import get_db
 from models import RoadModel, PredictionModel
-from schemas import Prediction
+from schemas import Prediction, CustomPredictionRequest
 from services.digital_twin_service import generate_predictions, get_risk_level
 from services.prediction_service import predict_road_degradation, get_predictions_for_road
 
 router = APIRouter(prefix="/predict", tags=["predictions"])
 
+
+@router.post("/custom", response_model=dict)
+async def custom_prediction(req: CustomPredictionRequest):
+    """
+    POST /predict/custom
+    Predict road degradation on the fly for custom map clicks.
+    """
+    features = {
+        "traffic_volume": req.traffic_volume,
+        "heavy_vehicle_percentage": req.heavy_vehicle_percentage,
+        "rainfall": req.rainfall,
+        "temperature": req.temperature,
+        "humidity": req.humidity,
+        "condition": req.current_condition
+    }
+    
+    degradation = predict_road_degradation(features)
+    new_condition = max(0, min(100, req.current_condition - degradation))
+    
+    if new_condition < 40:
+        risk = "High"
+    elif new_condition < 70:
+        risk = "Medium"
+    else:
+        risk = "Low"
+        
+    return {
+        "degradation": degradation,
+        "new_condition": new_condition,
+        "risk_level": risk
+    }
 
 @router.post("/{road_id}", response_model=list[dict])
 async def run_prediction(

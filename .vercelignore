@@ -1,0 +1,11 @@
+.git
+.vercel
+node_modules
+pave-pro-vision-main/node_modules
+backend/.venv
+backend/__pycache__
+data
+hybrid
+*.pt
+*.pth
+*.zip

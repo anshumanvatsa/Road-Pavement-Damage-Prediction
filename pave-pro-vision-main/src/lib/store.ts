@@ -1,6 +1,6 @@
 import type { RoadSegment, Prediction, DigitalTwin } from './types';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 /** Synchronous fetch - required to keep store API compatible with existing pages */
 function syncFetch<T>(url: string, options?: { method?: string; body?: string }): T | undefined {
