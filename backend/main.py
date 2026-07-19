@@ -1,16 +1,22 @@
 """FastAPI application - production-grade backend for Predictive Project."""
+import os
 import sys
 import traceback as _tb
 from contextlib import asynccontextmanager
+
+# ── CRITICAL: Vercel runs this file from /var/task, not /var/task/backend ──
+# Add the backend directory to sys.path so all local modules can be found.
+_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# Track any startup import errors so we can expose them via the health endpoint
 _startup_errors: list[str] = []
 
-# ── App must be defined at module top-level so Vercel's static parser finds it ──
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup: create DB tables and seed if empty."""
@@ -55,7 +61,7 @@ async def global_exception_handler(request, exc):
 
 @app.get("/api/health")
 async def health():
-    """Health check - also reports any startup import errors."""
+    """Health check - also reports startup errors."""
     return {
         "status": "ok" if not _startup_errors else "degraded",
         "python": sys.version,
@@ -63,9 +69,8 @@ async def health():
     }
 
 
-# ── Routers - imported lazily inside a guard so any error is surfaced clearly ──
+# ── Routers - wrapped so errors surface as JSON ──
 try:
-    from config import get_settings  # noqa: F401 - validates config can load
     from routes.road_routes import router as roads_router
     from routes.prediction_routes import router as predictions_router
     from routes.digital_twin_routes import router as digital_twin_router
@@ -83,16 +88,14 @@ except Exception:
     _err = _tb.format_exc()
     _startup_errors.append(f"Router import failed:\n{_err}")
 
-    # Fallback stubs so the app doesn't return 404 on known API paths
     @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
     async def api_error_stub(path: str):
         return JSONResponse(
             status_code=500,
-            content={"detail": "Backend failed to start", "traceback": _err},
+            content={"detail": "Backend routers failed to load", "traceback": _err},
         )
 
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
