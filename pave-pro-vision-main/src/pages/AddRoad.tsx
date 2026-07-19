@@ -92,10 +92,13 @@ export default function AddRoad() {
           current_condition: currentForm.current_condition_index
         })
       });
-      if (res.ok) {
-        const data = await res.json();
-        setLivePrediction(data);
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Prediction error:', errorText);
+        throw new Error('Failed to fetch prediction');
       }
+      const data = await res.json();
+      setLivePrediction(data);
     } catch (e) {
       console.error("Prediction fetch failed", e);
     }

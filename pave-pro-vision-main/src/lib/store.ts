@@ -9,7 +9,11 @@ export async function addRoad(road: Omit<RoadSegment, 'id' | 'last_updated'>): P
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(road),
   });
-  if (!res.ok) throw new Error('Failed to add road');
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('addRoad error:', errorText);
+    throw new Error('Failed to add road');
+  }
   return res.json();
 }
 

@@ -30,8 +30,23 @@ class Base(DeclarativeBase):
     pass
 
 
+_db_initialized = False
+
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """Dependency that provides a database session."""
+    """Dependency that provides a database session.
+    Also ensures DB is initialized on first request for serverless environments
+    that skip FastAPI lifespan events.
+    """
+    global _db_initialized
+    if not _db_initialized:
+        await init_db()
+        try:
+            from seed_data import seed_if_empty
+            await seed_if_empty()
+        except Exception as e:
+            print(f"Seed warning: {e}")
+        _db_initialized = True
+
     async with async_session_maker() as session:
         try:
             yield session
