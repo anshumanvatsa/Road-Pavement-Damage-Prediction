@@ -8,12 +8,18 @@ from config import get_settings
 
 settings = get_settings()
 
+# SQLite does not support pool_size or max_overflow with NullPool
+engine_kwargs = {
+    "echo": False,
+    "pool_pre_ping": True,
+}
+if not settings.database_url.startswith("sqlite"):
+    engine_kwargs["pool_size"] = 5
+    engine_kwargs["max_overflow"] = 10
+
 engine = create_async_engine(
     settings.database_url,
-    echo=False,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
+    **engine_kwargs
 )
 
 async_session_maker = async_sessionmaker(
