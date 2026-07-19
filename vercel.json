@@ -32,6 +32,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "/api"
+    "VITE_API_URL": "/api",
+    "USE_SQLITE": "1"
   }
 }
