@@ -17,9 +17,10 @@
       "src": "/api/(.*)",
       "dest": "backend/main.py"
     },
+    { "handle": "filesystem" },
     {
       "src": "/(.*)",
-      "dest": "pave-pro-vision-main/$1"
+      "dest": "/pave-pro-vision-main/index.html"
     }
   ],
   "env": {
