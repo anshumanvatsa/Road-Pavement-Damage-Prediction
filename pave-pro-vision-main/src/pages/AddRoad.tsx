@@ -20,7 +20,20 @@ const markerIcon = new L.Icon({
 function MapClickHandler({
   onSelect,
 }: {
-  onSelect: (lat: number, lng: number, road_name?: string, location?: string) => void;
+  onSelect: (
+    lat: number, 
+    lng: number, 
+    road_name?: string, 
+    location?: string,
+    envData?: {
+      current_condition_index: number;
+      traffic_volume: number;
+      heavy_vehicle_percentage: number;
+      rainfall: number;
+      temperature: number;
+      humidity: number;
+    }
+  ) => void;
 }) {
   const map = useMap();
   const markerRef = useRef<L.Marker | null>(null);
@@ -52,7 +65,15 @@ function MapClickHandler({
             data?.address?.village ||
             data?.address?.state ||
             '';
-          onSelect(lat, lng, road_name, location);
+          const envData = {
+            current_condition_index: Math.floor(Math.random() * 50) + 45, // 45-95
+            traffic_volume: Math.floor(Math.random() * 14000) + 1000,     // 1000-15000
+            heavy_vehicle_percentage: Math.floor(Math.random() * 25) + 5, // 5-30
+            rainfall: Math.floor(Math.random() * 190) + 10,               // 10-200
+            temperature: Math.floor(Math.random() * 30) + 5,              // 5-35
+            humidity: Math.floor(Math.random() * 60) + 30,                // 30-90
+          };
+          onSelect(lat, lng, road_name, location, envData);
         })
         .catch(() => {});
     },
@@ -162,13 +183,14 @@ export default function AddRoad() {
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <MapClickHandler
-              onSelect={(lat, lng, road_name, location) => {
+              onSelect={(lat, lng, road_name, location, envData) => {
                 const newForm = {
                   ...form,
                   latitude: lat,
                   longitude: lng,
                   ...(road_name !== undefined && { road_name }),
                   ...(location !== undefined && { location }),
+                  ...(envData !== undefined && envData),
                 };
                 setForm(newForm);
                 fetchLivePrediction(newForm);
